@@ -1,4 +1,5 @@
-const API_URL = 'http://localhost:3001/api';
+//const API_URL = 'http://localhost:3001/api';
+const API_URL = import.meta.env.VITE_API_URL;
 
 export const getZonasGeojson = async () => {
   const res = await fetch(`${API_URL}/zonas/geojson`);
@@ -24,7 +25,7 @@ export const createRegistro = async (data) => {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
   });
-  
+
   if (!res.ok) {
     const errorData = await res.json();
     throw new Error(errorData.error || 'Error al guardar registro');
