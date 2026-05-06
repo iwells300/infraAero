@@ -32,3 +32,9 @@ export const createRegistro = async (data) => {
   }
   return res.json();
 };
+
+export const getCurvas = async () => {
+  const res = await fetch(`${API_URL}/curvas`);
+  if (!res.ok) throw new Error('Error al obtener curvas');
+  return res.json();
+};

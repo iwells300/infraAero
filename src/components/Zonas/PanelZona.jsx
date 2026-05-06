@@ -28,11 +28,11 @@ const PanelZona = ({ zona, onNuevaMedicion }) => {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '1rem' }}>
         <div className="stat-card">
           <p className="stat-label">Área</p>
-          <p className="stat-value">{zona.metadata?.area || 'N/A'} m²</p>
+          <p className="stat-value">{zona.area || 'N/A'} m²</p>
         </div>
         <div className="stat-card">
-          <p className="stat-label">Sector</p>
-          <p className="stat-value">{zona.metadata?.sector || 'N/A'}</p>
+          <p className="stat-label">Pcr</p>
+          <p className="stat-value">{zona.pcr || 'N/A'}</p>
         </div>
         <div className="stat-card">
           <p className="stat-label">Último Valor Interpolado</p>

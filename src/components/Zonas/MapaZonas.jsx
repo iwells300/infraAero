@@ -53,7 +53,7 @@ const MapaZonas = ({ onSelectZona, refreshTrigger }) => {
   };
 
   const getColorFromValue = (val, zonaId) => {
-    if (val === null || val === undefined) return '#808080';
+    if (val === null || val === undefined) return 'rgba(59, 130, 246, 0.8)'; // Bright blue default
     
     // Calculamos el color dinámicamente. 
     // Para no iterar en cada feature sobre toda la colección, pasamos la colección global.
@@ -79,20 +79,27 @@ const MapaZonas = ({ onSelectZona, refreshTrigger }) => {
     return {
       color: '#ffffff', // Borde blanco
       weight: 2,
-      fillColor: color,
+      fillColor: color || '#808080',
       fillOpacity: 0.5,
+      opacity: 1
     };
   };
 
   if (loading) return <div className="glass-panel" style={{height: '500px', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>Cargando mapa...</div>;
 
   return (
-    <div style={{ height: '500px', width: '100%', borderRadius: '1rem', overflow: 'hidden', border: '1px solid var(--border-color)' }}>
-      <MapContainer center={[-34.60, -58.42]} zoom={12} style={{ height: '100%', width: '100%' }}>
+    <div style={{ height: '75vh', width: '100%', borderRadius: '1rem', overflow: 'hidden', border: '1px solid var(--border-color)' }}>
+      <MapContainer center={[-34.55980196212431, -58.41318606154176]} zoom={15} style={{ height: '100%', width: '100%' }}>
         <TileLayer
           url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
         />
+        <TileLayer
+          url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}.png"
+          attribution='Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+        />
+
+
         {geoData && (
           <GeoJSON 
             key={mapKey}

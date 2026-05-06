@@ -1,5 +1,5 @@
 import React from 'react';
-import { LayoutDashboard, Users, Building2, PieChart, Activity, Sun, Moon, Map } from 'lucide-react';
+import { LayoutDashboard, Users, Building2, PieChart, Activity, Sun, Moon, Map,PlaneTakeoff  } from 'lucide-react';
 
 const Sidebar = ({ activeTab, setActiveTab, theme, toggleTheme }) => {
     const menuItems = [
@@ -7,7 +7,8 @@ const Sidebar = ({ activeTab, setActiveTab, theme, toggleTheme }) => {
         { id: 'agents', label: 'Agentes', icon: Users },
         { id: 'properties', label: 'Propiedades', icon: Building2 },
         { id: 'finance', label: 'Finanzas', icon: PieChart },
-        { id: 'zonas', label: 'Zonas', icon: Map },
+        { id: 'Pavement Condition Index', label: 'PCI', icon: Map },
+        { id: 'Pavement Classification Rating', label: 'PCR', icon: Map },
     ];
 
     return (
@@ -30,10 +31,11 @@ const Sidebar = ({ activeTab, setActiveTab, theme, toggleTheme }) => {
                     alignItems: 'center',
                     justifyContent: 'center'
                 }}>
-                    <Building2 size={20} color="white" />
+                    <PlaneTakeoff  size={20} color="white" />
                 </div>
                 <h2 style={{ fontSize: '1.25rem', letterSpacing: '-0.025em' }}>
-                    Lux<span className="text-gradient">Estate</span>
+                    Aeroparque<br />
+                    <span className="text-gradient">Jorge Newbery</span>
                 </h2>
             </div>
 

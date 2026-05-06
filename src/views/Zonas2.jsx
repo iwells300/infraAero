@@ -4,7 +4,7 @@ import PanelZona from '../components/Zonas/PanelZona';
 import FormularioMedicion from '../components/Zonas/FormularioMedicion';
 import { getZonaById } from '../services/api';
 
-const Zonas = () => {
+const Zonas2 = () => {
   const [selectedZonaId, setSelectedZonaId] = useState(null);
   const [zonaDetails, setZonaDetails] = useState(null);
   const [showFormulario, setShowFormulario] = useState(false);
@@ -39,10 +39,12 @@ const Zonas = () => {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gridTemplateColumns: '1fr 1fr', gap: '1rem', height: '100%' }}>
+    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', height: '100%' }}>
       {/* Columna Izquierda: Mapa */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem',height:'75vh' }}>
-        
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        <h2 style={{ fontSize: '1.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <span style={{ color: 'var(--primary-color)' }}>📍</span> Mapa de Zonas Industriales
+        </h2>
         <MapaZonas onSelectZona={handleSelectZona} refreshTrigger={refreshTrigger} />
       </div>
 
@@ -66,4 +68,4 @@ const Zonas = () => {
   );
 };
 
-export default Zonas;
+export default Zonas2;
