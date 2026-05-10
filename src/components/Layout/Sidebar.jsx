@@ -1,12 +1,14 @@
 import React from 'react';
-import { LayoutDashboard, Users, Building2, PieChart, Activity, Sun, Moon, Map,PlaneTakeoff  } from 'lucide-react';
+import { LayoutDashboard, Users, Building2, PieChart, Sun, Moon, Map, PlaneTakeoff, CalendarDays } from 'lucide-react';
 
 const Sidebar = ({ activeTab, setActiveTab, theme, toggleTheme }) => {
     const menuItems = [
-        { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+        { id: 'panel general', label: 'Panel general', icon: LayoutDashboard },
+        { id: 'panel AEP', label: 'Panel AEP', icon: LayoutDashboard },
         { id: 'agents', label: 'Agentes', icon: Users },
         { id: 'properties', label: 'Propiedades', icon: Building2 },
         { id: 'finance', label: 'Finanzas', icon: PieChart },
+        { id: 'mantenimiento', label: 'Mantenimiento', icon: CalendarDays },
         { id: 'Pavement Condition Index', label: 'PCI', icon: Map },
         { id: 'Pavement Classification Rating', label: 'PCR', icon: Map },
     ];

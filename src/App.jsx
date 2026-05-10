@@ -3,15 +3,17 @@ import Sidebar from './components/Layout/Sidebar';
 import { buildInitialState } from './data/generator';
 
 // Real Views
-import Dashboard from './views/Dashboard';
+import Dashboard from './views/AirsideDashboard';
+import DashboardSABE from './views/AerDashboard';
 import Agents from './views/Agents';
 import Properties from './views/Properties';
 import Financial from './views/Financial';
 import Zonas from './views/Zonas';
 import Zonas2 from './views/Zonas2';
+import AgendaMantenimiento from './views/AgendaMantenimiento';
 
 const App = () => {
-  const [activeTab, setActiveTab] = useState('dashboard');
+  const [activeTab, setActiveTab] = useState('Panel general');
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -37,12 +39,14 @@ const App = () => {
 
   const renderContent = () => {
     switch (activeTab) {
-      case 'dashboard': return <Dashboard data={data} />;
+      case 'panel general': return <Dashboard data={data} />;
+      case 'panel AEP': return <DashboardSABE data={data} />;
       case 'agents': return <Agents data={data} />;
       case 'properties': return <Properties data={data} />;
       case 'finance': return <Financial data={data} />;
       case 'Pavement Condition Index': return <Zonas2 />;
       case 'Pavement Classification Rating': return <Zonas />;
+      case 'mantenimiento': return <AgendaMantenimiento />;
       default: return <Dashboard data={data} />;
     }
   };

@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import MapaZonas from '../components/Zonas/MapaZonas';
-import PanelZona from '../components/Zonas/PanelZona';
+import React, { useCallback, useState, useEffect } from 'react';
+import MapaZonas from '../components/Zonas/MapaZonasPCR';
+import PanelZona from '../components/Zonas/PanelZonaPCR';
 import FormularioMedicion from '../components/Zonas/FormularioMedicion';
 import { getZonaById } from '../services/api';
 
@@ -10,7 +10,7 @@ const Zonas = () => {
   const [showFormulario, setShowFormulario] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
-  const fetchZonaDetails = async (id) => {
+  const fetchZonaDetails = useCallback(async (id) => {
     try {
       const data = await getZonaById(id);
       setZonaDetails(data);
@@ -18,12 +18,26 @@ const Zonas = () => {
       console.error(error);
       setZonaDetails(null);
     }
-  };
+  }, []);
 
   useEffect(() => {
-    if (selectedZonaId) {
-      fetchZonaDetails(selectedZonaId);
+    if (!selectedZonaId) {
+      return undefined;
     }
+
+    let isActive = true;
+    getZonaById(selectedZonaId)
+      .then((data) => {
+        if (isActive) setZonaDetails(data);
+      })
+      .catch((error) => {
+        console.error(error);
+        if (isActive) setZonaDetails(null);
+      });
+
+    return () => {
+      isActive = false;
+    };
   }, [selectedZonaId]);
 
   const handleSelectZona = (id) => {

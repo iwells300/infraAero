@@ -1,15 +1,9 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, GeoJSON } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { getZonasGeojson } from '../../services/api';
 
-const MapaZonas = ({
-  onSelectZona,
-  refreshTrigger,
-  styleResolver,
-  tooltipResolver,
-  styleKey = 'default',
-}) => {
+const MapaZonas = ({ onSelectZona, refreshTrigger }) => {
   const [geoData, setGeoData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [mapKey, setMapKey] = useState(Date.now());
@@ -27,60 +21,38 @@ const MapaZonas = ({
       });
   }, [refreshTrigger]);
 
-  const resolveStyle = (feature) => {
-    if (styleResolver) {
-      return styleResolver(feature, geoData);
-    }
-
-    const val = feature.properties.ultimo_valor;
-    const color = getColorFromValue(val);
-    return {
-      color: '#ffffff',
-      weight: 2,
-      fillColor: color || '#808080',
-      fillOpacity: 0.5,
-      opacity: 1
-    };
-  };
-
   const onEachFeature = (feature, layer) => {
     layer.on({
       click: () => {
-        onSelectZona?.(feature.properties.zona_id);
+        onSelectZona(feature.properties.zona_id);
       },
     });
-
-    const tooltipContent = tooltipResolver?.(feature, geoData);
-    if (tooltipContent) {
-      layer.bindTooltip(tooltipContent, {
+    
+    const val = feature.properties.zona_id;
+    if (val !== null && val !== undefined) {
+      layer.bindTooltip(`<div class="zona-map-label" style="font-size:10px; color: ${getColorFromValue(val, feature.properties.zona_id)};"><b>${val}</b></div>`, {
         permanent: true,
         direction: 'center',
         className: 'transparent-tooltip'
       });
-    } else {
-      const val = feature.properties.ultimo_valor;
-      if (val !== null && val !== undefined) {
-        layer.bindTooltip(`<div class="zona-map-label" style="font-size:10px; color: ${getColorFromValue(val)};"><b>${val}</b></div>`, {
-          permanent: true,
-          direction: 'center',
-          className: 'transparent-tooltip'
-        });
-      }
     }
 
     // Estilos hover
-    layer.on('mouseover', function () {
+    layer.on('mouseover', function (e) {
       this.setStyle({
         fillOpacity: 0.8,
         weight: 3
       });
     });
-    layer.on('mouseout', function () {
-      this.setStyle(resolveStyle(feature));
+    layer.on('mouseout', function (e) {
+      this.setStyle({
+        fillOpacity: 0.5,
+        weight: 2
+      });
     });
   };
 
-  const getColorFromValue = (val) => {
+  const getColorFromValue = (val, zonaId) => {
     if (val === null || val === undefined) return 'rgba(59, 130, 246, 0.8)'; // Bright blue default
     
     // Calculamos el color dinámicamente. 
@@ -103,10 +75,15 @@ const MapaZonas = ({
   };
 
   const geojsonStyle = (feature) => {
-    return resolveStyle(feature);
+    const color = getColorFromValue(feature.properties.ultimo_valor, feature.properties.zona_id);
+    return {
+      color: '#ffffff', // Borde blanco
+      weight: 2,
+      fillColor: color || '#808080',
+      fillOpacity: 0.5,
+      opacity: 1
+    };
   };
-
-  const geoJsonKey = useMemo(() => `${mapKey}-${styleKey}`, [mapKey, styleKey]);
 
   if (loading) return <div className="glass-panel" style={{height: '500px', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>Cargando mapa...</div>;
 
@@ -125,7 +102,7 @@ const MapaZonas = ({
 
         {geoData && (
           <GeoJSON 
-            key={geoJsonKey}
+            key={mapKey}
             data={geoData} 
             onEachFeature={onEachFeature} 
             style={geojsonStyle}

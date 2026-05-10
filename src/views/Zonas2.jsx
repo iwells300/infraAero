@@ -1,67 +1,74 @@
 import React, { useState, useEffect } from 'react';
-import MapaZonas from '../components/Zonas/MapaZonas';
-import PanelZona from '../components/Zonas/PanelZona';
-import FormularioMedicion from '../components/Zonas/FormularioMedicion';
-import { getZonaById } from '../services/api';
+import MapaGrillaRwy from '../components/GrillaRwy/MapaGrillaRwy';
+import PanelGrillaRwy from '../components/GrillaRwy/PanelGrillaRwy';
+import PciRigidoCalculator from '../components/GrillaRwy/PciRigidoCalculator';
+import { getGrillaRwyEventoByFid } from '../services/api';
 
 const Zonas2 = () => {
-  const [selectedZonaId, setSelectedZonaId] = useState(null);
-  const [zonaDetails, setZonaDetails] = useState(null);
-  const [showFormulario, setShowFormulario] = useState(false);
+  const [selectedGrilla, setSelectedGrilla] = useState(null);
+  const [eventos, setEventos] = useState([]);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [showFormulario, setShowFormulario] = useState(false);
 
-  const fetchZonaDetails = async (id) => {
+  const fetchDetalle = async (fid) => {
     try {
-      const data = await getZonaById(id);
-      setZonaDetails(data);
+      const data = await getGrillaRwyEventoByFid(fid);
+      setSelectedGrilla({
+        ...data.grilla,
+        ultimoEvento: data.ultimoEvento,
+        ultimo_valor: data.ultimoEvento?.pci ?? data.ultimoEvento?.valor_interpolado ?? null,
+        ultimo_evento_fecha: data.ultimoEvento?.fecha ?? null,
+      });
+      setEventos(data.eventos || []);
     } catch (error) {
       console.error(error);
-      setZonaDetails(null);
+      setSelectedGrilla(null);
+      setEventos([]);
     }
   };
 
   useEffect(() => {
-    if (selectedZonaId) {
-      fetchZonaDetails(selectedZonaId);
+    if (selectedGrilla?.fid !== undefined && selectedGrilla?.fid !== null) {
+      fetchDetalle(selectedGrilla.fid);
     }
-  }, [selectedZonaId]);
+  }, [selectedGrilla?.fid]);
 
-  const handleSelectZona = (id) => {
-    setSelectedZonaId(id);
+  const handleSelectGrilla = (featureProps) => {
+    setSelectedGrilla(featureProps);
+    setEventos([]);
   };
 
-  const handleSuccessForm = () => {
-    setShowFormulario(false);
-    setRefreshTrigger(prev => prev + 1); // Forzar recarga del mapa
-    if (selectedZonaId) {
-      fetchZonaDetails(selectedZonaId); // Refrescar detalles y gráfico
+  const handleReload = () => {
+    setRefreshTrigger((prev) => prev + 1);
+    if (selectedGrilla?.fid !== undefined && selectedGrilla?.fid !== null) {
+      fetchDetalle(selectedGrilla.fid);
     }
   };
 
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', height: '100%' }}>
-      {/* Columna Izquierda: Mapa */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-        <h2 style={{ fontSize: '1.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <span style={{ color: 'var(--primary-color)' }}>📍</span> Mapa de Zonas Industriales
-        </h2>
-        <MapaZonas onSelectZona={handleSelectZona} refreshTrigger={refreshTrigger} />
+    <div style={{ display: 'flex', flexDirection: 'column', gridTemplateColumns: '1fr 1fr', gap: '1rem', height: '100%' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', height: '75vh' }}>
+        <MapaGrillaRwy onSelectGrilla={handleSelectGrilla} refreshTrigger={refreshTrigger} />
       </div>
 
-      {/* Columna Derecha: Panel de Detalles */}
       <div style={{ display: 'flex', flexDirection: 'column' }}>
-        <PanelZona 
-          zona={zonaDetails} 
-          onNuevaMedicion={() => setShowFormulario(true)} 
+        <PanelGrillaRwy
+          grilla={selectedGrilla}
+          eventos={eventos}
+          onReload={handleReload}
+          onNuevaMedicion={() => setShowFormulario(true)}
         />
       </div>
 
-      {/* Modal Formulario */}
-      {showFormulario && zonaDetails && (
-        <FormularioMedicion 
-          zona={zonaDetails} 
+      {showFormulario && selectedGrilla && (
+        <PciRigidoCalculator
+          grilla={selectedGrilla}
           onClose={() => setShowFormulario(false)}
-          onSuccess={handleSuccessForm}
+          onSuccess={async () => {
+            setShowFormulario(false);
+            setRefreshTrigger((prev) => prev + 1);
+            await fetchDetalle(selectedGrilla.fid);
+          }}
         />
       )}
     </div>
