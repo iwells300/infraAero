@@ -25,46 +25,36 @@ const PCI_THRESHOLDS = [
 
 const round2 = (value) => Math.round(value * 100) / 100;
 
-const ChartLabel = ({ x, y, viewBox, value, fill = '#0f172a', position = 'right' }) => {
+const ChartLabel = ({ viewBox, value, fill = '#94a3b8', position = 'insideLeft' }) => {
   if (!value) return null;
-
-  const text = String(value);
-  const width = Math.max(46, text.length * 7 + 12);
-  const height = 20;
-  const referenceX = Number.isFinite(x) ? x : viewBox?.x ?? 0;
-  const referenceY = Number.isFinite(y) ? y : viewBox?.y ?? 0;
-  const labelX = position === 'top'
-    ? referenceX - width / 2
-    : (viewBox?.x ?? referenceX) + (viewBox?.width ?? 0) - width - 8;
-  const labelY = position === 'top'
-    ? referenceY + 6
-    : referenceY - height / 2;
-
-  return (
-    <g>
-      <rect
-        x={labelX}
-        y={labelY}
-        width={width}
-        height={height}
-        rx={4}
-        fill="rgba(248, 250, 252, 0.94)"
-        stroke="rgba(15, 23, 42, 0.18)"
-      />
+  const { x = 0, y = 0 } = viewBox || {};
+  if (position === 'top') {
+    return (
       <text
-        x={labelX + width / 2}
-        y={labelY + 14}
+        x={x}
+        y={y - 4}
         fill={fill}
-        stroke="#ffffff"
-        strokeWidth={3}
-        paintOrder="stroke"
-        fontSize={10}
-        fontWeight={700}
+        fontSize={9}
+        fontWeight={600}
         textAnchor="middle"
+        style={{ pointerEvents: 'none' }}
       >
-        {text}
+        {value}
       </text>
-    </g>
+    );
+  }
+  return (
+    <text
+      x={x + 4}
+      y={y - 4}
+      fill={fill}
+      fontSize={9}
+      fontWeight={600}
+      textAnchor="start"
+      style={{ pointerEvents: 'none' }}
+    >
+      {value}
+    </text>
   );
 };
 
@@ -193,10 +183,10 @@ const PanelGrillaRwy = ({ grilla, eventos = [], onReload, onNuevaMedicion }) => 
         <div>
           <h2 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>PCI - Grilla RWY</h2>
           <p style={{ color: 'var(--text-secondary)', margin: 0 }}>
-            Selecciona una celda en el mapa para ver sus datos de la base.
+            Selecciona una celda en el mapa para ver su evolución o calcular un nuevo PCI.
           </p>
         </div>
-        <div style={{ display: 'flex', gap: '0.75rem' }}>
+        <div style={{ display: 'flex', flexWrap:'wrap', gap: '0.75rem' }}>
           <button className="btn-secondary" onClick={onReload}>
             Recargar mapa
           </button>
@@ -208,7 +198,7 @@ const PanelGrillaRwy = ({ grilla, eventos = [], onReload, onNuevaMedicion }) => 
 
       {!grilla ? (
         <div style={{ padding: '1rem 0', color: 'var(--text-secondary)' }}>
-          Haz clic sobre una celda de la grilla para ver el detalle.
+          
         </div>
       ) : (
         <>
@@ -282,16 +272,20 @@ const PanelGrillaRwy = ({ grilla, eventos = [], onReload, onNuevaMedicion }) => 
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                   
-                <div className="pci-history-chart">
-                  <ResponsiveContainer width="100%" height={260}>
-                    <LineChart data={chartData} margin={{ top: 12, right: 18, bottom: 8, left: 0 }}>
+                <div className="pci-history-chart" style={{ minWidth: 0, overflow: 'hidden' }}>
+                  <ResponsiveContainer width="100%" height={280}>
+                    <LineChart data={chartData} margin={{ top: 14, right: 50, bottom: 24, left: 0 }}>
                       <CartesianGrid stroke="rgba(148, 163, 184, 0.2)" strokeDasharray="3 3" />
                       <XAxis
                         dataKey="time"
                         type="number"
                         domain={[minChartTime, maxChartTime]}
-                        tick={{ fill: '#94a3b8', fontSize: 11 }}
+                        tick={{ fill: '#94a3b8', fontSize: 10 }}
                         tickFormatter={(value) => formatShortDate(new Date(value))}
+                        tickCount={5}
+                        angle={-30}
+                        textAnchor="end"
+                        height={44}
                       />
                       <YAxis domain={[0, 100]} tick={{ fill: '#94a3b8', fontSize: 11 }} />
                       <Tooltip

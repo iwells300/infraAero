@@ -242,7 +242,7 @@ function Consequences({ selected, consequences }) {
     <section className="consequences">
       <div className="section-head">
         <div>
-          <h3>Consecuencias</h3>
+          <h3>Acciones relacionadas</h3>
           <p>{selected ? `${selected.start}-${selected.end} - ${selected.duration_min} min` : 'Seleccione una sugerencia para ver detalle.'}</p>
         </div>
       </div>

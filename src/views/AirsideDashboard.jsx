@@ -148,7 +148,7 @@ export default function AirsideDashboard() {
   ];
 
   return (
-    <div style={{ background: C.bg, minHeight: "100vh", color: C.text }}>
+    <div style={{ background: C.bg, color: C.text }}>
 
       {/* Header */}
       <div style={{ borderBottom: `1px solid ${C.border}`, padding: "20px 32px", display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -170,7 +170,7 @@ export default function AirsideDashboard() {
       </div>
 
       {/* KPIs */}
-      <div style={{ padding: "24px 32px 0", display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12 }}>
+      <div style={{ padding: "20px 24px 0" }} className="kpi-grid-4">
         <KpiCard label="Movimientos totales" value={fmt(cur.total)} delta={pct(ref23.total, cur.total)} />
         <KpiCard label="Pasajeros" value={fmt(cur.pax)} delta={pct(ref23.pax, cur.pax)} />
         <KpiCard label="Vuelos internacionales" value={fmt(cur.intl)} delta={pct(ref23.intl, cur.intl)} />
@@ -196,7 +196,7 @@ export default function AirsideDashboard() {
       </div>
 
       {/* Content */}
-      <div style={{ padding: "28px 32px" }}>
+      <div style={{ padding: "20px 24px" }}>
 
         {/* ── OPERACIONES ── */}
         {activeTab === "operaciones" && (
@@ -216,7 +216,7 @@ export default function AirsideDashboard() {
                   </LineChart>
                 </ResponsiveContainer>
               </ChartCard>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
+              <div className="chart-grid-2" style={{ gap: 20 }}>
               <ChartCard title="Vuelos domésticos vs internacionales por año">
                 <ResponsiveContainer width="100%" height={320}>
                   <BarChart data={intlData} >
@@ -267,7 +267,7 @@ export default function AirsideDashboard() {
               </p>
             </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
+            <div className="chart-grid-2" style={{ gap: 20 }}>
               <ChartCard title="Composición de flota por tipo — todos los aeropuertos">
                 <ResponsiveContainer width="100%" height={240}>
                   <BarChart data={fleetData}>
@@ -395,7 +395,7 @@ export default function AirsideDashboard() {
         {/* ── AEROPUERTOS ── */}
         {activeTab === "aeropuertos" && (
           <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-            <div style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr", gap: 20 }}>
+            <div className="chart-grid-2" style={{ gap: 20 }}>
               <ChartCard title={`Top 10 aeropuertos por movimientos — ${activeYear}`}>
                 <ResponsiveContainer width="100%" height={300}>
                   <BarChart data={topAirports} layout="vertical">
@@ -484,13 +484,8 @@ export default function AirsideDashboard() {
       </div>
 
       {/* Footer */}
-      <div style={{ borderTop:`1px solid ${C.border}`, padding:"16px 32px", display:"flex", justifyContent:"space-between", alignItems:"center" }}>
-        <p style={{ color: C.muted, fontSize: 11, margin: 0 }}>
-          
-        </p>
-        <p style={{ color: C.muted, fontSize: 11, margin: 0 }}>
-        Fuente: Informes Ministerio de Transporte Argentina 
-        </p>
+      <div style={{ borderTop:`1px solid ${C.border}`, padding:"12px 24px", display:"flex", justifyContent:"flex-end", alignItems:"center" }}>
+        <p style={{ color: C.muted, fontSize: 11, margin: 0 }}>Fuente: Informes Ministerio de Transporte Argentina</p>
       </div>
     </div>
   );

@@ -36,14 +36,18 @@ const VIEW_MODES = {
   sector: { label: 'Unidad seleccionada' }
 };
 
-const todayKey = () => new Date().toISOString().slice(0, 10);
+const pad2 = (value) => String(value).padStart(2, '0');
+
+const toKey = (date) => (
+  `${date.getFullYear()}-${pad2(date.getMonth() + 1)}-${pad2(date.getDate())}`
+);
+
+const todayKey = () => toKey(new Date());
 
 const fromKey = (key) => {
   const [year, month, day] = key.split('-').map(Number);
   return new Date(year, month - 1, day);
 };
-
-const toKey = (date) => date.toISOString().slice(0, 10);
 
 const formatDate = (key) => {
   const [year, month, day] = key.split('-');
@@ -57,8 +61,18 @@ const monthTitle = (date) => {
 
 const isWithinRange = (dateKey, startKey, endKey) => dateKey >= startKey && dateKey <= endKey;
 
-const maintenanceStartKey = (item) => (item.fecha ? toKey(new Date(item.fecha)) : null);
-const maintenanceEndKey = (item) => (item.fecha_fin ? toKey(new Date(item.fecha_fin)) : maintenanceStartKey(item));
+const keyFromTimestamp = (value) => {
+  if (!value) return null;
+  if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}/.test(value)) {
+    return value.slice(0, 10);
+  }
+
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? null : toKey(date);
+};
+
+const maintenanceStartKey = (item) => item.fecha_key || keyFromTimestamp(item.fecha);
+const maintenanceEndKey = (item) => item.fecha_fin_key || keyFromTimestamp(item.fecha_fin) || maintenanceStartKey(item);
 
 const activeOnDate = (item, dateKey) => {
   const startKey = maintenanceStartKey(item);
@@ -365,7 +379,7 @@ const AgendaMantenimiento = () => {
 
     const laneItems = assignLanes(zoneItems);
     const laneCount = Math.max(1, laneItems.reduce((max, item) => Math.max(max, item.laneIndex), 0) + 1);
-    const rowHeight = Math.max(56, laneCount * 32);
+    const rowHeight = Math.max(40, laneCount * 28);
 
     return (
       <div
@@ -381,11 +395,10 @@ const AgendaMantenimiento = () => {
             gridRow: `1 / span ${laneCount}`
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
-            <MapPin size={15} />
-            <strong style={{ fontSize: '0.92rem' }}>{zona.nombre || zona.id}</strong>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', overflow: 'hidden' }}>
+            <MapPin size={13} style={{ flexShrink: 0, color: 'var(--accent-gold)' }} />
+            <strong style={{ fontSize: '0.82rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{zona.nombre || zona.id}</strong>
           </div>
-          <span style={{ color: 'var(--text-secondary)', fontSize: '0.75rem' }}>{zona.id}</span>
         </div>
 
         {calendarDays.map((day, index) => {
@@ -436,40 +449,56 @@ const AgendaMantenimiento = () => {
   };
 
   return (
-    <div className="maintenance-layout">
+    <div className="maintenance-layout" style={{ animation: 'fadeIn 0.4s ease-out' }}>
+      {/* ── Columna izquierda: Mapa + Stats ── */}
       <div className="maintenance-column">
-        <MapaGrillaRwy
-          onSelectGrilla={handleSelectZona}
-          loadGeojson={getUnidadesMantenimientoGeojson}
-          styleResolver={mapStyleResolver}
-          tooltipResolver={mapTooltipResolver}
-          styleKey={`${viewMode}-${selectedZonaId || 'all'}-${selectedDate}`}
-        />
+        {/* Mapa */}
+        <div style={{ flex: 1, minHeight: 0, borderRadius: '0.75rem', overflow: 'hidden', border: '1px solid var(--glass-border)' }}>
+          <MapaGrillaRwy
+            onSelectGrilla={handleSelectZona}
+            loadGeojson={getUnidadesMantenimientoGeojson}
+            styleResolver={mapStyleResolver}
+            tooltipResolver={mapTooltipResolver}
+            styleKey={`${viewMode}-${selectedZonaId || 'all'}-${selectedDate}`}
+          />
+        </div>
 
-        <div className="glass-panel" style={{ padding: '1rem', borderRadius: '0.75rem', display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.75rem' }}>
-          <div className="stat-card">
-            <p className="stat-label">Vista</p>
-            <p className="stat-value" style={{ fontSize: '1rem' }}>{VIEW_MODES[viewMode].label}</p>
-          </div>
-          <div className="stat-card">
-            <p className="stat-label">Unidad</p>
-            <p className="stat-value" style={{ fontSize: '1rem' }}>{zonaDetails ? unidadLabel(zonaDetails) : 'Todas'}</p>
-          </div>
-          <div className="stat-card">
-            <p className="stat-label">Activos hoy</p>
-            <p className="stat-value">{activeRecordsOnSelectedDate.length}</p>
-          </div>
-          <div className="stat-card">
-            <p className="stat-label">Unidades</p>
-            <p className="stat-value">{zonas.length}</p>
+        {/* Stats panel */}
+        <div className="glass-panel" style={{ padding: '0.875rem', borderRadius: '0.75rem', flexShrink: 0 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.5rem' }}>
+            <div className="stat-card" style={{ borderLeft: '3px solid var(--accent-blue)', padding: '0.75rem' }}>
+              <p className="stat-label">Vista</p>
+              <p className="stat-value" style={{ fontSize: '0.875rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {VIEW_MODES[viewMode].label}
+              </p>
+            </div>
+            <div className="stat-card" style={{ borderLeft: '3px solid var(--accent-gold)', padding: '0.75rem' }}>
+              <p className="stat-label">Unidad</p>
+              <p className="stat-value" style={{ fontSize: '0.875rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {zonaDetails ? unidadLabel(zonaDetails) : 'Todas'}
+              </p>
+            </div>
+            <div className="stat-card" style={{ borderLeft: '3px solid var(--accent-green)', padding: '0.75rem' }}>
+              <p className="stat-label">Activos hoy</p>
+              <p className="stat-value" style={{ color: activeRecordsOnSelectedDate.length > 0 ? 'var(--accent-gold)' : 'var(--text-primary)' }}>
+                {activeRecordsOnSelectedDate.length}
+              </p>
+            </div>
+            <div className="stat-card" style={{ borderLeft: '3px solid var(--accent-blue)', padding: '0.75rem' }}>
+              <p className="stat-label">Unidades</p>
+              <p className="stat-value">{zonas.length}</p>
+            </div>
           </div>
         </div>
       </div>
 
+      {/* ── Columna derecha: Controles + Calendario + Tareas ── */}
       <div className="maintenance-column">
-        <div className="glass-panel" style={{ padding: '1rem', borderRadius: '0.75rem' }}>
+        {/* Toolbar */}
+        <div className="glass-panel" style={{ padding: '0.875rem 1rem', borderRadius: '0.75rem', flexShrink: 0 }}>
           <div className="maintenance-toolbar">
-            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
+              <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginRight: '0.25rem' }}>Vista:</span>
               {Object.entries(VIEW_MODES).map(([key, mode]) => {
                 const isActive = viewMode === key;
                 return (
@@ -478,7 +507,7 @@ const AgendaMantenimiento = () => {
                     type="button"
                     className={isActive ? 'btn-primary' : 'btn-secondary'}
                     onClick={() => setViewMode(key)}
-                    style={{ padding: '0.55rem 0.9rem' }}
+                    style={{ padding: '0.45rem 0.85rem', fontSize: '0.82rem' }}
                   >
                     {mode.label}
                   </button>
@@ -486,30 +515,47 @@ const AgendaMantenimiento = () => {
               })}
             </div>
 
-            <button type="button" className="btn-primary" onClick={openForm} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.45rem' }}>
-              <Plus size={16} />
-              Agendar mantenimiento
+            <button
+              type="button"
+              className="btn-primary"
+              onClick={openForm}
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '0.45rem', padding: '0.5rem 0.9rem', fontSize: '0.85rem' }}
+            >
+              <Plus size={15} />
+              Agendar
             </button>
           </div>
         </div>
 
-        <div className="glass-panel" style={{ padding: '1rem', borderRadius: '0.75rem', display: 'flex', flexDirection: 'column', gap: '0.75rem', flex: '1', minHeight: 0 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.75rem' }}>
+        {/* Calendario Gantt */}
+        <div className="glass-panel" style={{ padding: '0.875rem 1rem', borderRadius: '0.75rem', display: 'flex', flexDirection: 'column', gap: '0.6rem', flex: 2, minHeight: 0 }}>
+          {/* Calendar header */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.75rem', flexShrink: 0, flexWrap: 'wrap' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <LayoutGrid size={18} />
-              <strong>Calendario visual</strong>
+              <LayoutGrid size={16} color="var(--accent-gold)" />
+              <strong style={{ fontSize: '0.9rem' }}>Calendario visual</strong>
             </div>
-
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <button className="btn-secondary" type="button" onClick={() => handleMonthChange(-1)}>Anterior</button>
-              <h2 style={{ fontSize: '1.1rem', textTransform: 'capitalize', display: 'flex', alignItems: 'center', gap: '0.5rem', margin: 0 }}>
-                <CalendarDays size={18} />
-                {monthTitle(visibleMonth)}
-              </h2>
-              <button className="btn-secondary" type="button" onClick={() => handleMonthChange(1)}>Siguiente</button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              <button
+                className="btn-secondary"
+                type="button"
+                onClick={() => handleMonthChange(-1)}
+                style={{ padding: '0.35rem 0.65rem', fontSize: '0.8rem' }}
+              >‹ Anterior</button>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', padding: '0.35rem 0.75rem', borderRadius: '0.5rem', background: 'rgba(251,191,36,0.1)', border: '1px solid rgba(251,191,36,0.25)' }}>
+                <CalendarDays size={14} color="var(--accent-gold)" />
+                <span style={{ fontSize: '0.85rem', fontWeight: 600, textTransform: 'capitalize', whiteSpace: 'nowrap' }}>{monthTitle(visibleMonth)}</span>
+              </div>
+              <button
+                className="btn-secondary"
+                type="button"
+                onClick={() => handleMonthChange(1)}
+                style={{ padding: '0.35rem 0.65rem', fontSize: '0.8rem' }}
+              >Siguiente ›</button>
             </div>
           </div>
 
+          {/* Gantt grid */}
           <div className="maintenance-calendar-shell">
             <div className="maintenance-calendar-scroll">
               <div className="maintenance-calendar-grid">
@@ -526,10 +572,11 @@ const AgendaMantenimiento = () => {
                         onClick={() => setSelectedDate(day.key)}
                         style={{
                           background: isSelected
-                            ? 'rgba(251, 191, 36, 0.2)'
+                            ? 'rgba(251, 191, 36, 0.25)'
                             : isToday
-                              ? 'rgba(59, 130, 246, 0.16)'
-                              : 'transparent'
+                              ? 'rgba(59, 130, 246, 0.18)'
+                              : 'transparent',
+                          borderBottom: isSelected ? '2px solid var(--accent-gold)' : isToday ? '2px solid var(--accent-blue)' : 'none',
                         }}
                       >
                         <span>{day.date.toLocaleDateString('es-AR', { weekday: 'short' }).slice(0, 3)}</span>
@@ -539,11 +586,22 @@ const AgendaMantenimiento = () => {
                   })}
                 </div>
 
-                {loading && <div style={{ padding: '1rem', color: 'var(--text-secondary)' }}>Cargando agenda...</div>}
+                {loading && (
+                  <div style={{ padding: '1rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <div style={{ width: '14px', height: '14px', border: '2px solid rgba(251,191,36,0.3)', borderTopColor: '#fbbf24', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+                    Cargando agenda...
+                  </div>
+                )}
 
                 {!loading && visibleZones.length === 0 && viewMode === 'sector' && (
-                  <div style={{ padding: '1rem', color: 'var(--text-secondary)' }}>
+                  <div style={{ padding: '1rem', color: 'var(--text-secondary)', fontStyle: 'italic', fontSize: '0.875rem' }}>
                     Selecciona una unidad en el mapa para ver su calendario.
+                  </div>
+                )}
+
+                {!loading && visibleZones.length === 0 && viewMode === 'all' && (
+                  <div style={{ padding: '1rem', color: 'var(--text-secondary)', fontStyle: 'italic', fontSize: '0.875rem' }}>
+                    No hay unidades con mantenimientos registrados.
                   </div>
                 )}
 
@@ -553,61 +611,61 @@ const AgendaMantenimiento = () => {
           </div>
         </div>
 
-        <div className="glass-panel maintenance-task-list" style={{ padding: '1.25rem', borderRadius: '0.75rem', flex: '1', minHeight: 0 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-            <h2 style={{ fontSize: '1.15rem', display: 'flex', alignItems: 'center', gap: '0.5rem', margin: 0 }}>
-              <ScanSearch size={18} />
-              Tareas para el {formatDate(selectedDate)}
-            </h2>
+        {/* Lista de tareas */}
+        <div className="glass-panel maintenance-task-list" style={{ padding: '0.875rem 1rem', borderRadius: '0.75rem', flex: 1, minHeight: 0 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', flexShrink: 0 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <ScanSearch size={16} color="var(--accent-blue)" />
+              <strong style={{ fontSize: '0.9rem' }}>Tareas — {formatDate(selectedDate)}</strong>
+            </div>
             <span className="badge badge-info">{activeRecordsOnSelectedDate.length} activos</span>
           </div>
 
           <div className="maintenance-task-scroll">
             {!loading && activeRecordsOnSelectedDate.length === 0 && (
-              <p style={{ color: 'var(--text-secondary)' }}>No hay mantenimientos activos en esta fecha.</p>
+              <div style={{ padding: '1rem', color: 'var(--text-secondary)', textAlign: 'center', fontSize: '0.875rem', fontStyle: 'italic', border: '1px dashed var(--glass-border)', borderRadius: '0.5rem' }}>
+                Sin mantenimientos activos para esta fecha.
+              </div>
             )}
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-              {activeRecordsOnSelectedDate.map((item) => {
-                const meta = PRIORITY_META[item.prioridad] || PRIORITY_META.media;
-
-                return (
-                  <div
-                    key={item.id}
-                    style={{
-                      border: '1px solid var(--glass-border)',
-                      borderRadius: '0.75rem',
-                      padding: '0.85rem',
-                      background: 'rgba(15, 23, 42, 0.28)'
-                    }}
-                  >
-                    <div style={{ display: 'flex', justifyContent: 'space-between', gap: '0.75rem', alignItems: 'flex-start' }}>
-                      <div>
-                        <p style={{ margin: 0, fontWeight: 700 }}>{item.zona?.nombre || item.zona_id}</p>
-                        <p style={{ margin: '0.35rem 0', color: 'var(--text-secondary)' }}>
-                          {item.hora_inicio} - {item.hora_fin}
-                        </p>
-                        <p style={{ margin: 0, color: 'var(--text-secondary)', fontSize: '0.82rem' }}>
-                          {formatDate(item.startKey)} a {formatDate(item.endKey)}
-                        </p>
-                      </div>
-                      <span className={`badge ${meta.badge}`}>{meta.label}</span>
+            {activeRecordsOnSelectedDate.map((item) => {
+              const meta = PRIORITY_META[item.prioridad] || PRIORITY_META.media;
+              return (
+                <div
+                  key={item.id}
+                  style={{
+                    border: '1px solid var(--glass-border)',
+                    borderLeft: `3px solid ${meta.color}`,
+                    borderRadius: '0.75rem',
+                    padding: '0.75rem',
+                    background: 'rgba(15, 23, 42, 0.28)',
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', gap: '0.5rem', alignItems: 'flex-start', marginBottom: '0.4rem' }}>
+                    <div>
+                      <p style={{ margin: 0, fontWeight: 700, fontSize: '0.9rem' }}>{item.zona?.nombre || item.zona_id}</p>
+                      <p style={{ margin: '0.2rem 0 0', color: 'var(--text-secondary)', fontSize: '0.78rem' }}>
+                        {item.hora_inicio} – {item.hora_fin} · {formatDate(item.startKey)} a {formatDate(item.endKey)}
+                      </p>
                     </div>
-
-                    <p style={{ margin: '0.6rem 0', lineHeight: 1.4 }}>{item.tarea}</p>
-
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                      <CheckCircle2 size={16} color="var(--accent-green)" />
-                      <select value={item.estado} onChange={(event) => handleEstadoChange(item.id, event.target.value)}>
-                        {Object.entries(STATUS_OPTIONS).map(([value, label]) => (
-                          <option key={value} value={value}>{label}</option>
-                        ))}
-                      </select>
-                    </div>
+                    <span className={`badge ${meta.badge}`} style={{ flexShrink: 0 }}>{meta.label}</span>
                   </div>
-                );
-              })}
-            </div>
+                  <p style={{ margin: '0.4rem 0', lineHeight: 1.4, fontSize: '0.85rem', color: 'var(--text-primary)' }}>{item.tarea}</p>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginTop: '0.4rem' }}>
+                    <CheckCircle2 size={14} color="var(--accent-green)" />
+                    <select
+                      value={item.estado}
+                      onChange={(event) => handleEstadoChange(item.id, event.target.value)}
+                      style={{ padding: '0.3rem 0.5rem', fontSize: '0.8rem' }}
+                    >
+                      {Object.entries(STATUS_OPTIONS).map(([value, label]) => (
+                        <option key={value} value={value}>{label}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>

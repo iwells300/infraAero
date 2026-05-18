@@ -1016,10 +1016,14 @@ const PanelZona = ({ zona, verificationAircraft = [], onVerificarAeronave, onCdf
     <div className="glass-panel" style={{ padding: '2rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '1rem' }}>
         <div>
-          <h2 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>{zona ? zona.nombre : 'Selecciona una zona del mapa para ver su estructura.'}</h2>
+          {/* <h2 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>{zona ? zona.nombre : 'Selecciona una zona del mapa para ver su estructura.'}</h2> */}
           {/* <h1 style={{ color: 'var(--text-secondary)', margin: 0 }}>
             {zona ? zona.nombre : 'Selecciona una zona del mapa para ver su estructura.'}
           </h1> */}
+          <h2 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>PCR - Integridad estructural</h2>
+          <p style={{ color: 'var(--text-secondary)', margin: 0 }}>
+            {zona ? zona.nombre : 'Selecciona una zona del mapa para ver su estructura.'}
+          </p>
         </div>
         <button className="btn-primary" onClick={openVerificationModal} disabled={!zona}>
           Verificar aeronave

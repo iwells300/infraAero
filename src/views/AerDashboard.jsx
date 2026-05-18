@@ -60,7 +60,7 @@ const KPI = ({ label, value, base, unit="", accent=C.accent, warn=false }) => {
 };
 
 const Card = ({ title, sub, children, style={} }) => (
-  <div style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:12, padding:"18px 22px", ...style }}>
+  <div style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:12, padding:"18px 22px", overflow:"hidden", minWidth:0, ...style }}>
     {title && <div style={{ marginBottom:14 }}>
       <p style={{ color:C.textDim, fontSize:13, fontWeight:500, margin:0 }}>{title}</p>
       {sub && <p style={{ color:C.muted, fontSize:11, margin:"3px 0 0" }}>{sub}</p>}
@@ -138,7 +138,7 @@ export default function AerDashboard() {
   ];
 
   return (
-    <div style={{ background:C.bg, minHeight:"100vh", color:C.text }}>
+    <div style={{ background:C.bg, color:C.text }}>
 
       {/* HEADER */}
       <div style={{ background:C.bg, borderBottom:`1px solid ${C.border}`, padding:"18px 32px" }}>
@@ -160,7 +160,7 @@ export default function AerDashboard() {
       </div>
 
       {/* KPIs */}
-      <div style={{ padding:"20px 32px 0", display:"grid", gridTemplateColumns:"repeat(5,1fr)", gap:10 }}>
+      <div style={{ padding:"16px 24px 0" }} className="kpi-grid-5">
         <KPI label="Movimientos totales"      value={cur.total}    base={ref.total} />
         <KPI label="Pasajeros"                value={cur.pax}      base={ref.pax} />
         <KPI label="Vuelos domésticos"        value={cur.domestic} base={ref.domestic} />
@@ -174,7 +174,7 @@ export default function AerDashboard() {
         {tabs.map(t=><TabBtn key={t.id} id={t.id} active={tab===t.id} onClick={setTab}>{t.label}</TabBtn>)}
       </div>
 
-      <div style={{ padding:"24px 32px" }}>
+      <div style={{ padding:"16px 24px" }}>
 
         {/* ── RESUMEN ── */}
         {tab==="overview" && (
@@ -194,7 +194,7 @@ export default function AerDashboard() {
               ))}
             </div>
 
-            <div style={{ display:"grid", gridTemplateColumns:"1.4fr 1fr", gap:16 }}>
+            <div className="chart-grid-1-2" style={{ gap:16 }}>
               <Card title="Movimientos mensuales — 2023 · 2024 · 2025">
                 <ResponsiveContainer width="100%" height={320}>
                   <LineChart data={monthlyMovData}>
@@ -246,67 +246,66 @@ export default function AerDashboard() {
         {/* ── TRÁFICO ── */}
         {tab==="trafico" && (
           <div style={{ display:"flex", flexDirection:"column", gap:18 }}>
-            <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:16 }}>
-              <Card title="Pasajeros mensuales acumulados">
-                <ResponsiveContainer width="100%" height={320}>
-                  <AreaChart data={monthlyPaxData}>
-                    <defs>
-                      <linearGradient id="gPax" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%"  stopColor={C.gold} stopOpacity={0.25} />
-                        <stop offset="95%" stopColor={C.gold} stopOpacity={0}    />
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke={C.border} />
-                    <XAxis dataKey="mes" tick={{ fill:C.muted, fontSize:11 }} />
-                    <YAxis tickFormatter={fmt} tick={{ fill:C.muted, fontSize:11 }} />
-                    <Tooltip content={<Tip />} />
-                    <Legend wrapperStyle={{ fontSize:11, color:C.muted }} />
-                    <Area dataKey="2023" stroke={C.y2023} fill="transparent" strokeWidth={1.5} dot={false} />
-                    <Area dataKey="2024" stroke={C.y2024} fill="transparent" strokeWidth={1.5} dot={false} />
-                    <Area dataKey="2025" stroke={C.y2025} fill="url(#gPax)"  strokeWidth={2.5} dot={false} />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </Card>
-              <Card title="Mix doméstico / internacional por año">
-                <div style={{ display:"flex", flexDirection:"column", gap:16, marginTop:6 }}>
-                  {AER.YEARS.map(y=>{
-                    const d=AER.byYear[y];
-                    const total=d.domestic+d.intl;
-                    const intlPct=(d.intl/total*100).toFixed(1);
-                    const yColor=y===2023?C.y2023:y===2024?C.y2024:C.y2025;
-                    return (
-                      <div key={y}>
-                        <div style={{ display:"flex", justifyContent:"space-between", marginBottom:4 }}>
-                          <span style={{ color:yColor, fontSize:12, fontWeight:700 }}>{y}</span>
-                          <span style={{ color:C.muted, fontSize:11 }}>Intl: {intlPct}%</span>
-                        </div>
-                        <div style={{ height:10, background:C.border, borderRadius:5, overflow:"hidden", display:"flex" }}>
-                          <div style={{ width:`${100-parseFloat(intlPct)}%`, background:C.accent, borderRadius:"5px 0 0 5px" }} />
-                          <div style={{ width:`${intlPct}%`, background:C.gold }} />
-                        </div>
-                        <div style={{ display:"flex", justifyContent:"space-between", marginTop:3 }}>
-                          <span style={{ color:C.muted, fontSize:10 }}>Dom: {fmt(d.domestic)}</span>
-                          <span style={{ color:C.gold,  fontSize:10 }}>Intl: {fmt(d.intl)}</span>
-                        </div>
+            <Card title="Pasajeros mensuales acumulados">
+              <ResponsiveContainer width="100%" height={320}>
+                <AreaChart data={monthlyPaxData}>
+                  <defs>
+                    <linearGradient id="gPax" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%"  stopColor={C.gold} stopOpacity={0.25} />
+                      <stop offset="95%" stopColor={C.gold} stopOpacity={0}    />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke={C.border} />
+                  <XAxis dataKey="mes" tick={{ fill:C.muted, fontSize:11 }} />
+                  <YAxis tickFormatter={fmt} tick={{ fill:C.muted, fontSize:11 }} />
+                  <Tooltip content={<Tip />} />
+                  <Legend wrapperStyle={{ fontSize:11, color:C.muted }} />
+                  <Area dataKey="2023" stroke={C.y2023} fill="transparent" strokeWidth={1.5} dot={false} />
+                  <Area dataKey="2024" stroke={C.y2024} fill="transparent" strokeWidth={1.5} dot={false} />
+                  <Area dataKey="2025" stroke={C.y2025} fill="url(#gPax)"  strokeWidth={2.5} dot={false} />
+                </AreaChart>
+              </ResponsiveContainer>
+            </Card>
+
+            <Card title="Mix doméstico / internacional por año">
+              <div style={{ display:"flex", flexDirection:"column", gap:16, marginTop:6 }}>
+                {AER.YEARS.map(y=>{
+                  const d=AER.byYear[y];
+                  const total=d.domestic+d.intl;
+                  const intlPct=(d.intl/total*100).toFixed(1);
+                  const yColor=y===2023?C.y2023:y===2024?C.y2024:C.y2025;
+                  return (
+                    <div key={y}>
+                      <div style={{ display:"flex", justifyContent:"space-between", marginBottom:4 }}>
+                        <span style={{ color:yColor, fontSize:12, fontWeight:700 }}>{y}</span>
+                        <span style={{ color:C.muted, fontSize:11 }}>Intl: {intlPct}%</span>
                       </div>
-                    );
-                  })}
-                </div>
-                <div style={{ marginTop:16, padding:"10px 12px", background:`${C.gold}15`, border:`1px solid ${C.gold}40`, borderRadius:8 }}>
-                  <p style={{ color:C.gold, fontSize:11, margin:0 }}>
-                    Los vuelos internacionales pasaron del <strong>22.0%</strong> (2023) al <strong>28.9%</strong> (2025).
-                    Un cambio estructural que impacta en infraestructura de plataforma y equipos de rampa.
-                  </p>
-                </div>
-              </Card>
-            </div>
+                      <div style={{ height:10, background:C.border, borderRadius:5, overflow:"hidden", display:"flex" }}>
+                        <div style={{ width:`${100-parseFloat(intlPct)}%`, background:C.accent, borderRadius:"5px 0 0 5px" }} />
+                        <div style={{ width:`${intlPct}%`, background:C.gold }} />
+                      </div>
+                      <div style={{ display:"flex", justifyContent:"space-between", marginTop:3 }}>
+                        <span style={{ color:C.muted, fontSize:10 }}>Dom: {fmt(d.domestic)}</span>
+                        <span style={{ color:C.gold,  fontSize:10 }}>Intl: {fmt(d.intl)}</span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              <div style={{ marginTop:16, padding:"10px 12px", background:`${C.gold}15`, border:`1px solid ${C.gold}40`, borderRadius:8 }}>
+                <p style={{ color:C.gold, fontSize:11, margin:0 }}>
+                  Los vuelos internacionales pasaron del <strong>22.0%</strong> (2023) al <strong>28.9%</strong> (2025).
+                  Un cambio estructural que impacta en infraestructura de plataforma y equipos de rampa.
+                </p>
+              </div>
+            </Card>
           </div>
         )}
 
         {/* ── AEROLÍNEAS ── */}
         {tab==="aerolineas" && (
           <div style={{ display:"flex", flexDirection:"column", gap:18 }}>
-            <div style={{ display:"grid", gridTemplateColumns:"1.2fr 1fr", gap:16 }}>
+            <div className="chart-grid-1-2" style={{ gap:16 }}>
               <Card title={`Movimientos por aerolínea — ${year}`}>
                 <ResponsiveContainer width="100%" height={280}>
                   <BarChart data={airlineData} layout="vertical">
@@ -379,7 +378,7 @@ export default function AerDashboard() {
         {/* ── RUTAS ── */}
         {tab==="rutas" && (
           <div style={{ display:"flex", flexDirection:"column", gap:18 }}>
-            <div style={{ display:"grid", gridTemplateColumns:"1.3fr 1fr", gap:16 }}>
+            <div className="chart-grid-1-2" style={{ gap:16 }}>
               <Card title="Top 15 rutas — movimientos 2025" sub="azul=doméstico · dorado=internacional">
                 <ResponsiveContainer width="100%" height={340}>
                   <BarChart data={routesOrdered} layout="vertical">
@@ -462,7 +461,7 @@ export default function AerDashboard() {
         {tab==="mantenimiento" && (
           <div style={{ display:"flex", flexDirection:"column", gap:18 }}>
 
-            <div style={{ display:"grid", gridTemplateColumns:"1.4fr 1fr", gap:16 }}>
+            <div className="chart-grid-1-2" style={{ gap:16 }}>
               <Card title="Curva horaria — 2023 vs 2025" sub="referencias: ventana óptima (verde) y pico (rojo)">
                 <ResponsiveContainer width="100%" height={360}>
                   <AreaChart data={hourlyData}>

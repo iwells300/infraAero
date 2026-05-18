@@ -34,8 +34,8 @@ const Zonas = () => {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gridTemplateColumns: '1fr 1fr', gap: '1rem', height: '100%' }}>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', height: '75vh' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', height: '100%', minHeight: 0 }}>
+      <div style={{ flex: 1, minHeight: '55vh', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
         <MapaZonas
           onSelectZona={handleSelectZona}
           refreshTrigger={0}

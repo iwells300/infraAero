@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import MapaGrillaRwy from '../components/GrillaRwy/MapaGrillaRwy';
 import PanelGrillaRwy from '../components/GrillaRwy/PanelGrillaRwy';
 import PciRigidoCalculator from '../components/GrillaRwy/PciRigidoCalculator';
@@ -27,15 +27,12 @@ const Zonas2 = () => {
     }
   };
 
-  useEffect(() => {
-    if (selectedGrilla?.fid !== undefined && selectedGrilla?.fid !== null) {
-      fetchDetalle(selectedGrilla.fid);
-    }
-  }, [selectedGrilla?.fid]);
-
   const handleSelectGrilla = (featureProps) => {
     setSelectedGrilla(featureProps);
     setEventos([]);
+    if (featureProps?.fid !== undefined && featureProps?.fid !== null) {
+      fetchDetalle(featureProps.fid);
+    }
   };
 
   const handleReload = () => {
@@ -46,8 +43,8 @@ const Zonas2 = () => {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gridTemplateColumns: '1fr 1fr', gap: '1rem', height: '100%' }}>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', height: '75vh' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', height: '100%', minHeight: 0 }}>
+      <div style={{ flex: 1, minHeight: '55vh', display: 'flex', flexDirection: 'column' }}>
         <MapaGrillaRwy
           onSelectGrilla={handleSelectGrilla}
           refreshTrigger={refreshTrigger}

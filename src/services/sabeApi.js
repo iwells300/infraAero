@@ -1,6 +1,6 @@
 const RAW_SABE_API_URL = import.meta.env.VITE_SABE_API_URL;
 
-export const SABE_API_URL = (RAW_SABE_API_URL || '').replace(/\/+$/, '');
+export const SABE_API_URL = (RAW_SABE_API_URL || '').replace(/\/+$/, '').replace(/\/api$/i, '');
 export const SABE_TIMETABLE = import.meta.env.VITE_SABE_TIMETABLE || 'live';
 
 const ensureSabeApiUrl = () => {
