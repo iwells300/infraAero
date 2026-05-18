@@ -5,10 +5,20 @@
   --accent-gold: #fbbf24;
   --accent-green: #10b981;
   --accent-blue: #3b82f6;
+  --primary-gradient: linear-gradient(135deg, #fbbf24, #f59e0b);
   --border-color: rgba(255, 255, 255, 0.1);
   --glass-bg: rgba(30, 41, 59, 0.7);
   --glass-border: rgba(255, 255, 255, 0.1);
   --glass-hover: rgba(51, 65, 85, 0.8);
+  --sidebar-bg: rgba(15, 23, 42, 0.85);
+  --control-bg: rgba(148,163,184,0.08);
+  --field-bg: rgba(15,23,42,0.4);
+  --stat-bg: rgba(15,23,42,0.28);
+  --panel-inner-bg: rgba(15,23,42,0.24);
+  --calendar-head-bg: rgba(15,23,42,0.95);
+  --calendar-cell-border: rgba(255,255,255,0.04);
+  --scrollbar-thumb: #334155;
+  --scrollbar-thumb-hover: #475569;
   --card-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
   --danger: #ef4444;
   --sidebar-width: 260px;
@@ -17,13 +27,26 @@
 }
 
 body.light-mode {
-  --bg-color: #f1f5f9;
-  --text-primary: #1e293b;
-  --text-secondary: #64748b;
-  --border-color: rgba(203,213,225,0.6);
-  --glass-bg: rgba(255,255,255,0.7);
-  --glass-border: rgba(203,213,225,0.6);
-  --glass-hover: rgba(255,255,255,0.9);
+  --bg-color: #edf5ff;
+  --text-primary: #172033;
+  --text-secondary: #5b677a;
+  --accent-gold: #d97706;
+  --accent-green: #059669;
+  --accent-blue: #2563eb;
+  --primary-gradient: linear-gradient(135deg, #f59e0b, #d97706);
+  --border-color: rgba(96,165,250,0.28);
+  --glass-bg: rgba(247,251,255,0.9);
+  --glass-border: rgba(96,165,250,0.26);
+  --glass-hover: rgba(232,242,255,0.98);
+  --sidebar-bg: rgba(241,248,255,0.96);
+  --control-bg: rgba(219,234,254,0.78);
+  --field-bg: rgba(255,255,255,0.92);
+  --stat-bg: rgba(226,239,255,0.88);
+  --panel-inner-bg: rgba(218,234,253,0.78);
+  --calendar-head-bg: rgba(226,239,255,0.96);
+  --calendar-cell-border: rgba(37,99,235,0.14);
+  --scrollbar-thumb: #cbd5e1;
+  --scrollbar-thumb-hover: #94a3b8;
   --card-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 10px 15px -3px rgba(0,0,0,0.1);
 }
 
@@ -49,6 +72,12 @@ body {
   background-image:
     radial-gradient(circle at 10% 20%, rgba(59,130,246,0.15) 0%, transparent 20%),
     radial-gradient(circle at 90% 80%, rgba(251,191,36,0.1) 0%, transparent 20%);
+}
+
+body.light-mode {
+  background-image:
+    radial-gradient(circle at 8% 14%, rgba(37,99,235,0.13) 0%, transparent 22%),
+    radial-gradient(circle at 92% 84%, rgba(5,150,105,0.10) 0%, transparent 24%);
 }
 
 /* ── Layout ── */
@@ -115,7 +144,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .text-gradient {
-  background: linear-gradient(to right, #fbbf24, #f59e0b);
+  background: var(--primary-gradient);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -129,8 +158,8 @@ h1, h2, h3, h4, h5, h6 {
 /* ── Scrollbar ── */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: #475569; }
+::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--scrollbar-thumb-hover); }
 
 /* ── Badges ── */
 .badge {
@@ -159,7 +188,7 @@ h1, h2, h3, h4, h5, h6 {
   font-size: 0.875rem;
 }
 
-.btn-primary { background: linear-gradient(135deg, #fbbf24, #f59e0b); color: #111827; }
+.btn-primary { background: var(--primary-gradient); color: #111827; }
 .btn-secondary { background: rgba(148,163,184,0.16); color: var(--text-primary); border: 1px solid var(--glass-border); }
 
 .btn-primary:hover, .btn-secondary:hover { transform: translateY(-1px); }
@@ -171,7 +200,7 @@ h1, h2, h3, h4, h5, h6 {
 .form-field textarea,
 .form-field select,
 select {
-  background: rgba(15,23,42,0.4);
+  background: var(--field-bg);
   border: 1px solid var(--glass-border);
   border-radius: 0.5rem;
   color: var(--text-primary);
@@ -203,7 +232,7 @@ select:focus {
 
 /* ── Stat cards ── */
 .stat-card {
-  background: rgba(15,23,42,0.28);
+  background: var(--stat-bg);
   border: 1px solid var(--glass-border);
   border-radius: 0.5rem;
   padding: 1rem;
@@ -303,7 +332,7 @@ select:focus {
 }
 
 .pci-row-head { color: var(--text-secondary); font-size: 0.75rem; font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase; padding: 0 0.25rem; }
-.pci-row:not(.pci-row-head) { background: rgba(15,23,42,0.28); border: 1px solid var(--glass-border); border-radius: 0.75rem; padding: 0.6rem; }
+.pci-row:not(.pci-row-head) { background: var(--stat-bg); border: 1px solid var(--glass-border); border-radius: 0.75rem; padding: 0.6rem; }
 .pci-output { color: var(--text-primary); font-size: 0.88rem; font-weight: 700; text-align: center; }
 
 .pci-icon-button {
@@ -320,7 +349,7 @@ select:focus {
 
 .pci-result { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 0.75rem; }
 
-.pci-details { border: 1px solid var(--glass-border); border-radius: 0.75rem; background: rgba(15,23,42,0.22); padding: 1rem; }
+.pci-details { border: 1px solid var(--glass-border); border-radius: 0.75rem; background: var(--panel-inner-bg); padding: 1rem; }
 .pci-details summary { cursor: pointer; font-weight: 700; color: var(--text-primary); }
 .pci-details table { width: 100%; border-collapse: collapse; margin-top: 0.9rem; }
 .pci-details th, .pci-details td { text-align: left; padding: 0.6rem 0.5rem; border-bottom: 1px solid var(--glass-border); }
@@ -337,7 +366,7 @@ select:focus {
 .pci-history-chart, .pci-chart-card {
   border: 1px solid var(--glass-border);
   border-radius: 0.75rem;
-  background: rgba(15,23,42,0.24);
+  background: var(--panel-inner-bg);
   padding: 1rem;
   overflow: hidden;
   min-width: 0;
@@ -357,7 +386,7 @@ select:focus {
   display: flex; flex-direction: column; gap: 0.2rem;
   border: 1px solid var(--glass-border);
   border-radius: 0.5rem;
-  background: rgba(15,23,42,0.92);
+  background: var(--sidebar-bg);
   color: var(--text-primary);
   padding: 0.5rem 0.65rem;
   font-size: 0.8rem;
@@ -373,7 +402,7 @@ select:focus {
 }
 
 .pci-history-row:last-child { border-bottom: none; }
-.pci-history-head { background: rgba(15,23,42,0.32); color: var(--text-secondary); font-size: 0.75rem; font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase; }
+.pci-history-head { background: var(--panel-inner-bg); color: var(--text-secondary); font-size: 0.75rem; font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase; }
 .pci-history-row strong { color: var(--text-primary); font-size: 1rem; }
 
 /* ── Agenda Mantenimiento ── */
@@ -430,7 +459,7 @@ select:focus {
   position: sticky;
   top: 0;
   z-index: 3;
-  background: rgba(15,23,42,0.95);
+  background: var(--calendar-head-bg);
   border-bottom: 1px solid var(--glass-border);
 }
 
@@ -438,7 +467,7 @@ select:focus {
 
 .maintenance-day-head {
   border: none;
-  border-left: 1px solid rgba(255,255,255,0.04);
+  border-left: 1px solid var(--calendar-cell-border);
   background: transparent;
   color: var(--text-primary);
   cursor: pointer;
@@ -465,7 +494,7 @@ select:focus {
 .maintenance-zone-cell {
   padding: 0.4rem 0.75rem;
   border-right: 1px solid var(--glass-border);
-  background: rgba(15,23,42,0.25);
+  background: var(--panel-inner-bg);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -473,7 +502,7 @@ select:focus {
   min-height: inherit;
 }
 
-.maintenance-day-cell { border-left: 1px solid rgba(255,255,255,0.04); min-height: 100%; }
+.maintenance-day-cell { border-left: 1px solid var(--calendar-cell-border); min-height: 100%; }
 
 .maintenance-gantt-bar {
   align-self: center;

@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  LayoutDashboard, PieChart, Sun, Moon, PlaneTakeoff, CalendarDays, Wrench,
+  LayoutDashboard, Sun, Moon, PlaneTakeoff, CalendarDays,
   LayoutPanelLeft, LandPlot, Shovel, TowerControl, ChevronLeft, ChevronRight
 } from 'lucide-react';
 
@@ -13,7 +13,9 @@ const menuItems = [
   { id: 'mantenimiento',               label: 'Agenda Mantenimiento',   icon: CalendarDays },
 ];
 
-const Sidebar = ({ activeTab, setActiveTab, collapsed, onToggle }) => {
+const Sidebar = ({ activeTab, setActiveTab, collapsed, onToggle, theme, toggleTheme }) => {
+  const isLight = theme === 'light';
+
   return (
     <div
       className="glass-panel"
@@ -32,7 +34,7 @@ const Sidebar = ({ activeTab, setActiveTab, collapsed, onToggle }) => {
         overflow: 'hidden',
         boxSizing: 'border-box',
         flexShrink: 0,
-        background: 'rgba(15, 23, 42, 0.85)',
+        background: 'var(--sidebar-bg)',
       }}
     >
       {/* Logo / Brand */}
@@ -45,7 +47,7 @@ const Sidebar = ({ activeTab, setActiveTab, collapsed, onToggle }) => {
         overflow: 'hidden',
       }}>
         <div style={{
-          background: 'linear-gradient(135deg, #fbbf24, #f59e0b)',
+          background: 'var(--primary-gradient)',
           minWidth: '32px', width: '32px', height: '32px',
           borderRadius: '8px',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -79,7 +81,7 @@ const Sidebar = ({ activeTab, setActiveTab, collapsed, onToggle }) => {
                 borderRadius: '0.65rem',
                 border: 'none',
                 background: isActive ? 'rgba(251,191,36,0.15)' : 'transparent',
-                color: isActive ? '#fbbf24' : 'var(--text-secondary)',
+                color: isActive ? 'var(--accent-gold)' : 'var(--text-secondary)',
                 cursor: 'pointer',
                 transition: 'all 0.15s',
                 textAlign: 'left',
@@ -97,7 +99,7 @@ const Sidebar = ({ activeTab, setActiveTab, collapsed, onToggle }) => {
                 <div style={{
                   width: '5px', height: '5px',
                   borderRadius: '50%',
-                  background: '#fbbf24',
+                  background: 'var(--accent-gold)',
                   flexShrink: 0,
                 }} />
               )}
@@ -117,8 +119,8 @@ const Sidebar = ({ activeTab, setActiveTab, collapsed, onToggle }) => {
               style={{ width: '32px', height: '32px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }}
             />
             <div style={{ overflow: 'hidden' }}>
-              <p style={{ fontSize: '0.82rem', fontWeight: 600, margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>Admin User</p>
-              <p style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', margin: 0 }}>Director</p>
+              <p style={{ fontSize: '0.82rem', fontWeight: 600, margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>Iván R. Hellwig</p>
+              <p style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', margin: 0 }}>Ing. Civil</p>
             </div>
           </div>
         )}
@@ -132,7 +134,7 @@ const Sidebar = ({ activeTab, setActiveTab, collapsed, onToggle }) => {
             padding: '0.55rem',
             borderRadius: '0.65rem',
             border: '1px solid var(--glass-border)',
-            background: 'rgba(148,163,184,0.08)',
+            background: 'var(--control-bg)',
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
@@ -144,6 +146,29 @@ const Sidebar = ({ activeTab, setActiveTab, collapsed, onToggle }) => {
           }}
         >
           {collapsed ? <ChevronRight size={16} /> : <><ChevronLeft size={16} /><span>Colapsar</span></>}
+        </button>
+
+        <button
+          onClick={toggleTheme}
+          title={isLight ? 'Cambiar a modo oscuro' : 'Cambiar a modo claro'}
+          style={{
+            width: '100%',
+            padding: '0.55rem',
+            borderRadius: '0.65rem',
+            border: '1px solid var(--glass-border)',
+            background: 'var(--control-bg)',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '0.5rem',
+            color: 'var(--text-secondary)',
+            transition: 'background 0.15s, color 0.15s',
+            fontSize: '0.8rem',
+          }}
+        >
+          {isLight ? <Moon size={16} /> : <Sun size={16} />}
+          {!collapsed && <span>{isLight ? 'Modo oscuro' : 'Modo claro'}</span>}
         </button>
       </div>
     </div>

@@ -26,6 +26,7 @@ const App = () => {
   const [loading, setLoading] = useState(true);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [theme, setTheme] = useState(() => localStorage.getItem('crm-theme') || 'dark');
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -36,10 +37,15 @@ const App = () => {
     return () => clearTimeout(timer);
   }, []);
 
+  useEffect(() => {
+    document.body.classList.toggle('light-mode', theme === 'light');
+    localStorage.setItem('crm-theme', theme);
+  }, [theme]);
+
   if (loading) {
     return (
       <div className="flex-center" style={{ height: '100vh', flexDirection: 'column', gap: '1rem' }}>
-        <div style={{ width: '40px', height: '40px', border: '3px solid rgba(251,191,36,0.3)', borderTopColor: '#fbbf24', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+        <div style={{ width: '40px', height: '40px', border: '3px solid rgba(251,191,36,0.3)', borderTopColor: 'var(--accent-gold)', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
         <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
         <p className="text-secondary">Cargando sistema SABE...</p>
       </div>
@@ -63,6 +69,7 @@ const App = () => {
     setActiveTab(tab);
     setMobileOpen(false);
   };
+  const toggleTheme = () => setTheme((current) => (current === 'dark' ? 'light' : 'dark'));
 
   return (
     <div className={`layout-grid${sidebarCollapsed ? ' sidebar-collapsed' : ''}`}>
@@ -77,6 +84,8 @@ const App = () => {
           setActiveTab={handleSetActiveTab}
           collapsed={sidebarCollapsed}
           onToggle={() => setSidebarCollapsed(c => !c)}
+          theme={theme}
+          toggleTheme={toggleTheme}
         />
       </div>
 
