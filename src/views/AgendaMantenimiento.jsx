@@ -11,9 +11,9 @@ import MapaGrillaRwy from '../components/GrillaRwy/MapaGrillaRwy';
 import Modal from '../components/UI/Modal';
 import {
   createMantenimiento,
-  getGrillaRwyByFid,
-  getGrillaRwyGeojson,
   getMantenimientos,
+  getUnidadMantenimientoByFid,
+  getUnidadesMantenimientoGeojson,
   updateEstadoMantenimiento
 } from '../services/api';
 
@@ -32,8 +32,8 @@ const STATUS_OPTIONS = {
 };
 
 const VIEW_MODES = {
-  all: { label: 'Toda la grilla' },
-  sector: { label: 'Sector seleccionado' }
+  all: { label: 'Todas las unidades' },
+  sector: { label: 'Unidad seleccionada' }
 };
 
 const todayKey = () => new Date().toISOString().slice(0, 10);
@@ -108,8 +108,8 @@ const pickPriority = (items) => {
   return best;
 };
 
-const grillaLabel = (item) => {
-  const parts = [item.sector, item.seccion !== '---' ? item.seccion : null, item.umuestra !== '---' ? item.umuestra : null]
+const unidadLabel = (item) => {
+  const parts = [item.nombre, item.unidadm]
     .filter(Boolean);
   return parts.join(' - ') || item.nombre || item.id;
 };
@@ -171,7 +171,7 @@ const AgendaMantenimiento = () => {
     try {
       const [mantenimientosData, zonasData] = await Promise.all([
         getMantenimientos(),
-        getGrillaRwyGeojson()
+        getUnidadesMantenimientoGeojson()
       ]);
 
       setMantenimientos(
@@ -185,7 +185,7 @@ const AgendaMantenimiento = () => {
       setZonas(
         zonasData.features.map((feature) => ({
           id: String(feature.properties.fid),
-          nombre: grillaLabel(feature.properties),
+          nombre: unidadLabel(feature.properties),
           ...feature.properties
         }))
       );
@@ -206,7 +206,7 @@ const AgendaMantenimiento = () => {
       return;
     }
 
-    getGrillaRwyByFid(selectedZonaId)
+    getUnidadMantenimientoByFid(selectedZonaId)
       .then(setZonaDetails)
       .catch(() => setZonaDetails(null));
   }, [selectedZonaId]);
@@ -276,7 +276,7 @@ const AgendaMantenimiento = () => {
     event.preventDefault();
 
     if (!selectedZonaId) {
-      setError('Selecciona un sector en el mapa antes de agendar.');
+      setError('Selecciona una unidad en el mapa antes de agendar.');
       return;
     }
 
@@ -349,9 +349,7 @@ const AgendaMantenimiento = () => {
   const mapTooltipResolver = (feature) => {
     const zoneId = String(feature.properties.fid);
     const activeItems = activeByZone[zoneId] || [];
-    const label = feature.properties.umuestra && feature.properties.umuestra !== '---'
-      ? feature.properties.umuestra
-      : feature.properties.sector;
+    const label = feature.properties.unidadm || feature.properties.fid;
     const activeLabel = activeItems.length ? ` - ${activeItems.length}` : '';
     return `<div class="zona-map-label" style="font-size:10px; color:#ffffff;"><b>${label}${activeLabel}</b></div>`;
   };
@@ -442,6 +440,7 @@ const AgendaMantenimiento = () => {
       <div className="maintenance-column">
         <MapaGrillaRwy
           onSelectGrilla={handleSelectZona}
+          loadGeojson={getUnidadesMantenimientoGeojson}
           styleResolver={mapStyleResolver}
           tooltipResolver={mapTooltipResolver}
           styleKey={`${viewMode}-${selectedZonaId || 'all'}-${selectedDate}`}
@@ -453,15 +452,15 @@ const AgendaMantenimiento = () => {
             <p className="stat-value" style={{ fontSize: '1rem' }}>{VIEW_MODES[viewMode].label}</p>
           </div>
           <div className="stat-card">
-            <p className="stat-label">Sector</p>
-            <p className="stat-value" style={{ fontSize: '1rem' }}>{zonaDetails ? grillaLabel(zonaDetails) : 'Todos'}</p>
+            <p className="stat-label">Unidad</p>
+            <p className="stat-value" style={{ fontSize: '1rem' }}>{zonaDetails ? unidadLabel(zonaDetails) : 'Todas'}</p>
           </div>
           <div className="stat-card">
             <p className="stat-label">Activos hoy</p>
             <p className="stat-value">{activeRecordsOnSelectedDate.length}</p>
           </div>
           <div className="stat-card">
-            <p className="stat-label">Poligonos</p>
+            <p className="stat-label">Unidades</p>
             <p className="stat-value">{zonas.length}</p>
           </div>
         </div>
@@ -544,7 +543,7 @@ const AgendaMantenimiento = () => {
 
                 {!loading && visibleZones.length === 0 && viewMode === 'sector' && (
                   <div style={{ padding: '1rem', color: 'var(--text-secondary)' }}>
-                    Selecciona un sector en el mapa para ver su calendario.
+                    Selecciona una unidad en el mapa para ver su calendario.
                   </div>
                 )}
 
@@ -617,7 +616,7 @@ const AgendaMantenimiento = () => {
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
             <MapPin size={16} />
-            {zonaDetails ? `${grillaLabel(zonaDetails)} - PCR ${zonaDetails.pcr || 'N/A'}` : 'Selecciona un sector en el mapa'}
+            {zonaDetails ? `${unidadLabel(zonaDetails)} - PCR ${zonaDetails.pcr || 'N/A'}` : 'Selecciona una unidad en el mapa'}
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>

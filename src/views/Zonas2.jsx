@@ -48,7 +48,11 @@ const Zonas2 = () => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gridTemplateColumns: '1fr 1fr', gap: '1rem', height: '100%' }}>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', height: '75vh' }}>
-        <MapaGrillaRwy onSelectGrilla={handleSelectGrilla} refreshTrigger={refreshTrigger} />
+        <MapaGrillaRwy
+          onSelectGrilla={handleSelectGrilla}
+          refreshTrigger={refreshTrigger}
+          enableDeviceLocation
+        />
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column' }}>

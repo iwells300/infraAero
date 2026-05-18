@@ -5,12 +5,15 @@ import { buildInitialState } from './data/generator';
 // Real Views
 import Dashboard from './views/AirsideDashboard';
 import DashboardSABE from './views/AerDashboard';
-import Agents from './views/Agents';
-import Properties from './views/Properties';
-import Financial from './views/Financial';
 import Zonas from './views/Zonas';
 import Zonas2 from './views/Zonas2';
 import AgendaMantenimiento from './views/AgendaMantenimiento';
+import SabeMaintenance from './views/SabeMaintenance';
+
+const TAB_TITLES = {
+  'sabe-maintenance': 'Predictor ventanas de mantenimiento',
+  'mantenimiento':'Planificador de tareas'
+};
 
 const App = () => {
   const [activeTab, setActiveTab] = useState('Panel general');
@@ -40,25 +43,23 @@ const App = () => {
   const renderContent = () => {
     switch (activeTab) {
       case 'panel general': return <Dashboard data={data} />;
-      case 'panel AEP': return <DashboardSABE data={data} />;
-      case 'agents': return <Agents data={data} />;
-      case 'properties': return <Properties data={data} />;
-      case 'finance': return <Financial data={data} />;
+      case 'panel AEP': return <DashboardSABE data={data} />;     
       case 'Pavement Condition Index': return <Zonas2 />;
       case 'Pavement Classification Rating': return <Zonas />;
       case 'mantenimiento': return <AgendaMantenimiento />;
+      case 'sabe-maintenance': return <SabeMaintenance />;
       default: return <Dashboard data={data} />;
     }
   };
 
   return (
     <div className="layout-grid">
-      <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+      <Sidebar activeTab={activeTab} setActiveTab={setActiveTab}  />
       <main className="main-content">
         <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
           <div>
             <h1 style={{ fontSize: '2.175rem' }}>
-              {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
+              {TAB_TITLES[activeTab] || activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
             </h1>
             
           </div>

@@ -7,9 +7,21 @@ export const getZonasGeojson = async () => {
   return res.json();
 };
 
+export const getCdfBuffersGeojson = async () => {
+  const res = await fetch(`${API_URL}/zonas/cdf-buffers/geojson`);
+  if (!res.ok) throw new Error('Error al obtener GeoJSON de buffers CDF');
+  return res.json();
+};
+
 export const getGrillaRwyGeojson = async () => {
   const res = await fetch(`${API_URL}/grilla-rwy/geojson`);
   if (!res.ok) throw new Error('Error al obtener GeoJSON de grilla RWY');
+  return res.json();
+};
+
+export const getUnidadesMantenimientoGeojson = async () => {
+  const res = await fetch(`${API_URL}/mantenimientos/unidades/geojson`);
+  if (!res.ok) throw new Error('Error al obtener GeoJSON de unidades de mantenimiento');
   return res.json();
 };
 
@@ -19,9 +31,21 @@ export const getZonaById = async (id) => {
   return res.json();
 };
 
+export const getFaarfieldHeavyAeronaves = async () => {
+  const res = await fetch(`${API_URL}/zonas/faarfield-heavy/aeronaves`);
+  if (!res.ok) throw new Error('Error al obtener aeronaves FAARFIELD heavy');
+  return res.json();
+};
+
 export const getGrillaRwyByFid = async (fid) => {
   const res = await fetch(`${API_URL}/grilla-rwy/${fid}`);
   if (!res.ok) throw new Error('Error al obtener detalles de la grilla RWY');
+  return res.json();
+};
+
+export const getUnidadMantenimientoByFid = async (fid) => {
+  const res = await fetch(`${API_URL}/mantenimientos/unidades/${fid}`);
+  if (!res.ok) throw new Error('Error al obtener detalles de la unidad de mantenimiento');
   return res.json();
 };
 

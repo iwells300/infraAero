@@ -1,16 +1,15 @@
 import React from 'react';
-import { LayoutDashboard, Users, Building2, PieChart, Sun, Moon, Map, PlaneTakeoff, CalendarDays } from 'lucide-react';
+import { LayoutDashboard, Users, Building2, PieChart, Sun, Moon, Map, PlaneTakeoff, CalendarDays, Wrench , LayoutPanelLeft,
+    LandPlot,Shovel, TowerControl} from 'lucide-react';
 
 const Sidebar = ({ activeTab, setActiveTab, theme, toggleTheme }) => {
     const menuItems = [
         { id: 'panel general', label: 'Panel general', icon: LayoutDashboard },
-        { id: 'panel AEP', label: 'Panel AEP', icon: LayoutDashboard },
-        { id: 'agents', label: 'Agentes', icon: Users },
-        { id: 'properties', label: 'Propiedades', icon: Building2 },
-        { id: 'finance', label: 'Finanzas', icon: PieChart },
-        { id: 'mantenimiento', label: 'Mantenimiento', icon: CalendarDays },
-        { id: 'Pavement Condition Index', label: 'PCI', icon: Map },
-        { id: 'Pavement Classification Rating', label: 'PCR', icon: Map },
+        { id: 'panel AEP', label: 'Panel AEP', icon: LayoutPanelLeft },        
+        { id: 'Pavement Condition Index', label: 'PCI', icon: LandPlot },
+        { id: 'Pavement Classification Rating', label: 'PCR', icon: Shovel },
+        { id: 'sabe-maintenance', label: 'Ventanas Mantenimiento', icon: TowerControl},
+        { id: 'mantenimiento', label: 'Agenda Mantenimiento', icon: CalendarDays },
     ];
 
     return (
