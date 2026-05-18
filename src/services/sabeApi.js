@@ -1,6 +1,7 @@
 const RAW_SABE_API_URL = import.meta.env.VITE_SABE_API_URL;
 
 export const SABE_API_URL = (RAW_SABE_API_URL || '').replace(/\/+$/, '');
+export const SABE_TIMETABLE = import.meta.env.VITE_SABE_TIMETABLE || 'live';
 
 const ensureSabeApiUrl = () => {
   if (!SABE_API_URL) {
@@ -17,11 +18,11 @@ const requestSabe = async (path, options) => {
   return res.json();
 };
 
-export const getSabeBootstrap = (timetable = 'may14') => (
+export const getSabeBootstrap = (timetable = SABE_TIMETABLE) => (
   requestSabe(`/api/bootstrap?timetable=${encodeURIComponent(timetable)}`)
 );
 
-export const getSabeWindows = ({ timetable = 'may14', unitId, durations = '15,30,60,120,180', step = 15 }) => {
+export const getSabeWindows = ({ timetable = SABE_TIMETABLE, unitId, durations = '15,30,60,120,180', step = 15 }) => {
   const params = new URLSearchParams({
     timetable,
     unit_id: unitId,
@@ -31,7 +32,7 @@ export const getSabeWindows = ({ timetable = 'may14', unitId, durations = '15,30
   return requestSabe(`/api/windows?${params}`);
 };
 
-export const getSabeScenario = ({ timetable = 'may14', unitId, start, end, mode, signal }) => {
+export const getSabeScenario = ({ timetable = SABE_TIMETABLE, unitId, start, end, mode, signal }) => {
   const params = new URLSearchParams({
     timetable,
     unit_id: unitId,

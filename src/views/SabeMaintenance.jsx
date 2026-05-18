@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Maximize2, Pause, Play, RotateCcw, Square } from 'lucide-react';
-import { SABE_API_URL, getSabeBootstrap, getSabeScenario, getSabeWindows } from '../services/sabeApi';
+import { SABE_API_URL, SABE_TIMETABLE, getSabeBootstrap, getSabeScenario, getSabeWindows } from '../services/sabeApi';
 import './SabeMaintenance.css';
 
 const DURATIONS = [15, 30, 60, 120, 180];
@@ -468,6 +468,8 @@ function SabeMaintenance() {
   const [showPsn, setShowPsn] = useState(true);
   const [showMaintenance, setShowMaintenance] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [apiError, setApiError] = useState('');
+  const [activeTimetable, setActiveTimetable] = useState(SABE_TIMETABLE);
   const scenarioRequestRef = useRef(0);
 
   const chooseUnit = (unitId) => {
@@ -486,11 +488,17 @@ function SabeMaintenance() {
 
   useEffect(() => {
     setLoading(true);
-    getSabeBootstrap('may14')
+    setApiError('');
+    getSabeBootstrap(SABE_TIMETABLE)
       .then((payload) => {
         setData(payload);
         setScenario({ events: payload.events, consequences: [] });
         setSelectedUnit(payload.units?.[0]?.unit_id || '');
+        setActiveTimetable(payload.timetable || SABE_TIMETABLE);
+      })
+      .catch((err) => {
+        console.error(err);
+        setApiError(`No se pudo cargar el modelo SABE desde ${SABE_API_URL}.`);
       })
       .finally(() => setLoading(false));
   }, []);
@@ -498,10 +506,16 @@ function SabeMaintenance() {
   useEffect(() => {
     if (!selectedUnit) return;
     setLoading(true);
-    getSabeWindows({ timetable: 'may14', unitId: selectedUnit, durations: '15,30,60,120,180', step: 15 })
+    setApiError('');
+    getSabeWindows({ timetable: activeTimetable, unitId: selectedUnit, durations: '15,30,60,120,180', step: 15 })
       .then(setWindows)
+      .catch((err) => {
+        console.error(err);
+        setWindows(null);
+        setApiError('No se pudieron cargar las ventanas sugeridas para la unidad seleccionada.');
+      })
       .finally(() => setLoading(false));
-  }, [selectedUnit]);
+  }, [activeTimetable, selectedUnit]);
 
   useEffect(() => {
     if (!selectedWindow || !selectedUnit) return;
@@ -510,8 +524,9 @@ function SabeMaintenance() {
     const controller = new AbortController();
     setScenario({ events: data?.events || scenario?.events || [], consequences: [] });
     setLoading(true);
+    setApiError('');
     getSabeScenario({
-      timetable: 'may14',
+      timetable: activeTimetable,
       unitId: selectedUnit,
       start: selectedWindow.start,
       end: selectedWindow.end,
@@ -526,13 +541,16 @@ function SabeMaintenance() {
         setPlaying(true);
       })
       .catch((err) => {
-        if (err.name !== 'AbortError') console.error(err);
+        if (err.name !== 'AbortError') {
+          console.error(err);
+          setApiError('No se pudo calcular el escenario para la ventana seleccionada.');
+        }
       })
       .finally(() => {
         if (requestId === scenarioRequestRef.current) setLoading(false);
       });
     return () => controller.abort();
-  }, [selectedWindow, selectedUnit, mode]);
+  }, [activeTimetable, selectedWindow, selectedUnit, mode]);
 
   useEffect(() => {
     simTimeRef.current = simTime;
@@ -559,19 +577,29 @@ function SabeMaintenance() {
 
   const selectedUnitLabel = data?.units?.find((u) => u.unit_id === selectedUnit)?.label || selectedUnit;
   const logoBase = data?.assets?.logoBase || '/assets/Logos/';
+  const timetableLabel = activeTimetable === 'live' ? 'operacion en vivo' : `timetable ${activeTimetable}`;
 
-  if (!data) return <div className="sabe-maintenance-view"><div className="loading">Cargando modelo SABE...</div></div>;
+  if (!data) {
+    return (
+      <div className="sabe-maintenance-view">
+        <div className="loading">
+          {apiError || 'Cargando modelo SABE...'}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <main className="sabe-maintenance-view app">
       <header className="topbar">
         <div>
           <h1>
-          Timetable 14 de mayo - unidad: {selectedUnitLabel || 'seleccione en el mapa'}
+          {timetableLabel} - unidad: {selectedUnitLabel || 'seleccione en el mapa'}
          </h1>
         </div>
       </header>
       {loading && <div className="loading-overlay"><span className="spinner" />Cargando datos...</div>}
+      {apiError && <div className="empty-panel" style={{ borderColor: '#f87171', color: '#fecaca' }}>{apiError}</div>}
 
       <section className="timeline">
         <PlaybackControls
