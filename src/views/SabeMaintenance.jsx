@@ -491,10 +491,12 @@ function SabeMaintenance() {
     setApiError('');
     getSabeBootstrap(SABE_TIMETABLE)
       .then((payload) => {
+        const firstFlightSec = Math.min(...(payload.flights || []).map((flight) => flight.time_sec));
         setData(payload);
         setScenario({ events: payload.events, consequences: [] });
         setSelectedUnit(payload.units?.[0]?.unit_id || '');
         setActiveTimetable(payload.timetable || SABE_TIMETABLE);
+        setSimTime(Number.isFinite(firstFlightSec) ? firstFlightSec : 9 * 3600);
       })
       .catch((err) => {
         console.error(err);
