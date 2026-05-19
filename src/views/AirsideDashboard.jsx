@@ -263,7 +263,7 @@ export default function AirsideDashboard() {
                 Los aviones de <strong style={{ color: C.text }}>fuselaje ancho</strong> (A330, B767, B777, B787) ejercen hasta{" "}
                 <strong style={{ color: C.text }}>2.5x más presión por eje</strong> sobre el pavimento que un B737.
                 El crecimiento internacional en EZE significa mayor fatiga acumulada en plataformas y calles de rodaje,
-                requiriendo <strong style={{ color: C.text }}>revisiones de PCN/ACN más frecuentes</strong> y adelantar ciclos de repavimentación.
+                requiriendo <strong style={{ color: C.text }}>revisiones más frecuentes</strong> y adelantar ciclos de repavimentación.
               </p>
             </div>
 
@@ -299,22 +299,22 @@ export default function AirsideDashboard() {
               </ChartCard>
             </div>
 
-            <ChartCard title="Datos de carga por tipo de aeronave — referencia para cálculo PCN/ACN">
+            <ChartCard title="Datos de carga por tipo de aeronave — referencia para cálculo PCR/ACR">
               <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12, marginTop: 4 }}>
                 {[
-                  { tipo:"B737-800",  categoria:"Fuselaje estrecho", mtow:"79.015 kg",  presion:"~1.4 MPa", acn:"~35–45", color: C.blue  },
-                  { tipo:"A320-232",  categoria:"Fuselaje estrecho", mtow:"78.000 kg",  presion:"~1.4 MPa", acn:"~33–43", color: C.blue  },
-                  { tipo:"B767-300",  categoria:"Fuselaje ancho",    mtow:"187.000 kg", presion:"~1.5 MPa", acn:"~55–70", color: C.amber },
-                  { tipo:"A330-200",  categoria:"Fuselaje ancho",    mtow:"242.000 kg", presion:"~1.5 MPa", acn:"~65–80", color: C.amber },
-                  { tipo:"B777-300",  categoria:"Fuselaje ancho",    mtow:"352.400 kg", presion:"~1.6 MPa", acn:"~90–115",color: C.red   },
-                  { tipo:"EMB-190",   categoria:"Regional",          mtow:"51.800 kg",  presion:"~1.3 MPa", acn:"~18–28", color: C.green },
+                  { tipo:"B737-800",  categoria:"Fuselaje estrecho", mtow:"79.015 kg",  presion:"~1.4 MPa", acn:"~550", color: C.blue  },
+                  { tipo:"A320-232",  categoria:"Fuselaje estrecho", mtow:"78.000 kg",  presion:"~1.4 MPa", acn:"~500", color: C.blue  },
+                  { tipo:"B767-300",  categoria:"Fuselaje ancho",    mtow:"187.000 kg", presion:"~1.5 MPa", acn:"~670", color: C.amber },
+                  { tipo:"A330-200",  categoria:"Fuselaje ancho",    mtow:"242.000 kg", presion:"~1.5 MPa", acn:"~790", color: C.amber },
+                  { tipo:"B777-300",  categoria:"Fuselaje ancho",    mtow:"352.400 kg", presion:"~1.6 MPa", acn:"~880",color: C.red   },
+                  { tipo:"EMB-190",   categoria:"Regional",          mtow:"51.800 kg",  presion:"~1.3 MPa", acn:"~300", color: C.green },
                 ].map((a) => (
                   <div key={a.tipo} style={{ background: C.bg, border: `1px solid ${a.color}40`, borderRadius: 8, padding: "12px 14px" }}>
                     <p style={{ color: a.color, fontSize: 13, fontWeight: 700, margin: "0 0 4px" }}>{a.tipo}</p>
                     <p style={{ color: C.muted, fontSize: 11, margin: "0 0 8px" }}>{a.categoria}</p>
                     <span style={{ display:"block", fontSize: 11, color: C.textDim }}>MTOW: <strong style={{ color: C.text }}>{a.mtow}</strong></span>
                     <span style={{ display:"block", fontSize: 11, color: C.textDim }}>Presión rueda: <strong style={{ color: C.text }}>{a.presion}</strong></span>
-                    <span style={{ display:"block", fontSize: 11, color: C.textDim }}>ACN típico: <strong style={{ color: a.color }}>{a.acn}</strong></span>
+                    <span style={{ display:"block", fontSize: 11, color: C.textDim }}>ACR típico: <strong style={{ color: a.color }}>{a.acn}</strong></span>
                   </div>
                 ))}
               </div>

@@ -529,9 +529,9 @@ export default function AerDashboard() {
             <Card title="Perfil de flota AER — impacto en pavimentos">
               <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:12 }}>
                 {[
-                  { tipo:"Boeing 737", pct:"39%", acn:"~35–45", peso:"79t",   color:C.accent, nota:"Familia más frecuente. ACN medio. Alta tasa de ciclos por turnaround corto de LCC y AR." },
-                  { tipo:"EMB-ERJ190", pct:"23%", acn:"~22–28", peso:"51.8t", color:C.green,  nota:"Aeronave dominante en AER. Bajo ACN, menor impacto por pasada. Favorece la vida útil del pavimento." },
-                  { tipo:"Airbus A320",pct:"8%",  acn:"~33–43", peso:"78t",   color:C.purple, nota:"Similar al 737 en impacto. Combinado con 737 representan ~47% de la flota operativa en AER." },
+                  { tipo:"Boeing 737", pct:"39%", acn:"~550", peso:"79t",   color:C.accent, nota:"Familia más frecuente. ACR medio. Alta tasa de ciclos por turnaround corto." },
+                  { tipo:"EMB-ERJ190", pct:"23%", acn:"~300", peso:"51.8t", color:C.green,  nota:"Aeronave dominante en AER. Bajo ACR, menor impacto por pasada. Favorece la vida útil del pavimento." },
+                  { tipo:"Airbus A320",pct:"8%",  acn:"~500", peso:"78t",   color:C.purple, nota:"Similar al 737 en impacto. Combinado con 737 representan ~47% de la flota operativa en AER." },
                 ].map(a=>(
                   <div key={a.tipo} style={{ background:C.bg, border:`1px solid ${a.color}40`, borderRadius:8, padding:"14px 16px" }}>
                     <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:8 }}>
@@ -540,7 +540,7 @@ export default function AerDashboard() {
                     </div>
                     <div style={{ display:"flex", flexDirection:"column", gap:4, marginBottom:10 }}>
                       <span style={{ fontSize:11, color:C.textDim }}>MTOW: <strong style={{ color:C.text }}>{a.peso}</strong></span>
-                      <span style={{ fontSize:11, color:C.textDim }}>ACN típico: <strong style={{ color:a.color }}>{a.acn}</strong></span>
+                      <span style={{ fontSize:11, color:C.textDim }}>ACR típico: <strong style={{ color:a.color }}>{a.acn}</strong></span>
                     </div>
                     <p style={{ color:C.muted, fontSize:11, margin:0, lineHeight:1.5 }}>{a.nota}</p>
                   </div>
